@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Tienda Sencilla</title>
+    <!-- Incluimos Tailwind CSS para estilos rápidos, modernos y ligeros -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos de Lucide (versión ligera) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Transiciones suaves personalizadas */
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Barra de Navegación -->
+    <nav class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2 text-xl font-bold">
+                <i data-lucide="store" class="w-6 h-6"></i>
+                <span>MiTiendita</span>
+            </div>
+            <div class="flex space-x-4">
+                <button onclick="cambiarVista('tienda')" id="btn-tienda" class="px-3 py-2 rounded-md bg-indigo-700 hover:bg-indigo-800 transition font-medium flex items-center space-x-1">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Tienda</span>
+                </button>
+                <button onclick="cambiarVista('admin')" id="btn-admin" class="px-3 py-2 rounded-md hover:bg-indigo-700 transition font-medium flex items-center space-x-1">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Administración</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        
+        <!-- VISTA DE LA TIENDA -->
+        <section id="vista-tienda" class="fade-in">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">Nuestros Productos</h1>
+                <p class="text-gray-500 mt-1">Descubre lo mejor de nuestro catálogo.</p>
+            </div>
+            
+            <!-- Grid de Productos -->
+            <div id="grid-productos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Los productos se inyectan aquí con JS -->
+            </div>
+        </section>
+
+
+        <!-- VISTA DE ADMINISTRACIÓN -->
+        <section id="vista-admin" class="hidden fade-in">
+            <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Panel de Administración</h1>
+                    <p class="text-gray-500 mt-1">Gestiona el inventario y stock de tus productos.</p>
+                </div>
+                <div id="mensaje-exito" class="hidden bg-green-100 text-green-800 px-4 py-2 rounded-md flex items-center space-x-2 text-sm font-medium">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <span>Stock actualizado</span>
+                </div>
+            </div>
+
+            <!-- Tabla de Inventario -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
+                            <th class="p-4 border-b">ID</th>
+                            <th class="p-4 border-b">Producto</th>
+                            <th class="p-4 border-b">Categoría</th>
+                            <th class="p-4 border-b">Precio</th>
+                            <th class="p-4 border-b text-center">Stock Actual</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-admin-body" class="text-sm">
+                        <!-- Las filas se inyectan aquí con JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-sm mt-auto">
+        <p>&copy; 2026 MiTiendita. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Lógica de la aplicación -->
+    <script>
+        // --- 1. ESTADO DE LA APLICACIÓN (DATOS EN MEMORIA) ---
+        // Aquí definimos los productos iniciales.
+        let productos = [
+            {
+                id: 1,
+                nombre: "Audífonos Inalámbricos Pro",
+                categoria: "Tecnología",
+                precio: 45990,
+                descripcion: "Audífonos con cancelación de ruido activa y batería de 24 horas.",
+                stock: 15,
+                imagenUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80"
+            },
+            {
+                id: 2,
+                nombre: "Polera Básica Algodón",
+                categoria: "Ropa",
+                precio: 12500,
+                descripcion: "Polera 100% algodón premium, ideal para el uso diario. Talla L.",
+                stock: 50,
+                imagenUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80"
+            },
+            {
+                id: 3,
+                nombre: "Zapatillas Urbanas X",
+                categoria: "Calzado",
+                precio: 65000,
+                descripcion: "Zapatillas cómodas y ligeras para caminar por la ciudad.",
+                stock: 8,
+                imagenUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80"
+            },
+            {
+                id: 4,
+                nombre: "Smartwatch Deportivo",
+                categoria: "Tecnología",
+                precio: 89990,
+                descripcion: "Reloj inteligente con monitor de ritmo cardíaco y GPS integrado.",
+                stock: 0, // Ejemplo de producto agotado
+                imagenUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"
+            },
+            {
+                id: 5,
+                nombre: "Mochila Porta Notebook",
+                categoria: "Accesorios",
+                precio: 34900,
+                descripcion: "Mochila resistente al agua con compartimento para notebook de 15''.",
+                stock: 22,
+                imagenUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80"
+            }
+        ];
+
+
+        // --- 2. UTILIDADES ---
+        // Formatear números a Pesos Chilenos (CLP)
+        const formatearCLP = (valor) => {
+            return new Intl.NumberFormat('es-CL', { 
+                style: 'currency', 
+                currency: 'CLP',
+                minimumFractionDigits: 0
+            }).format(valor);
+        };
+
+
+        // --- 3. RENDERIZADO DE LA TIENDA ---
+        const renderizarTienda = () => {
+            const contenedor = document.getElementById('grid-productos');
+            contenedor.innerHTML = ''; // Limpiar previo
+
+            if (productos.length === 0) {
+                contenedor.innerHTML = '<p class="text-gray-500 col-span-full">No hay productos disponibles.</p>';
+                return;
+            }
+
+            productos.forEach(prod => {
+                const agotado = prod.stock <= 0;
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition duration-300 flex flex-col";
+                
+                card.innerHTML = `
+                    <div class="relative h-48 bg-gray-200">
+                        <img src="${prod.imagenUrl}" alt="${prod.nombre}" class="w-full h-full object-cover ${agotado ? 'grayscale opacity-70' : ''}">
+                        <div class="absolute top-2 right-2 bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-1 rounded">
+                            ${prod.categoria}
+                        </div>
+                        ${agotado ? '<div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span class="text-white font-bold text-lg border-2 border-white px-3 py-1 rounded rotate-12">AGOTADO</span></div>' : ''}
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <h2 class="text-lg font-bold text-gray-800 leading-tight mb-1">${prod.nombre}</h2>
+                        <p class="text-sm text-gray-500 mb-4 flex-grow line-clamp-2">${prod.descripcion}</p>
+                        
+                        <div class="flex items-end justify-between mt-auto">
+                            <div>
+                                <p class="text-xl font-extrabold text-indigo-600">${formatearCLP(prod.precio)}</p>
+                                <p class="text-xs ${prod.stock > 5 ? 'text-green-600' : (prod.stock > 0 ? 'text-orange-500' : 'text-red-500')} font-medium mt-1">
+                                    ${prod.stock > 0 ? `En stock: ${prod.stock} un.` : 'Sin unidades'}
+                                </p>
+                            </div>
+                            <button ${agotado ? 'disabled' : ''} class="${agotado ? 'bg-gray-300 cursor-not-allowed' : 'bg-gray-900 hover:bg-gray-800'} text-white p-2 rounded-full transition" title="Agregar al carrito">
+                                <i data-lucide="${agotado ? 'ban' : 'shopping-cart'}" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+            
+            // Re-renderizar iconos de Lucide
+            lucide.createIcons();
+        };
+
+
+        // --- 4. RENDERIZADO DEL PANEL DE ADMINISTRACIÓN ---
+        const renderizarAdmin = () => {
+            const tbody = document.getElementById('tabla-admin-body');
+            tbody.innerHTML = '';
+
+            productos.forEach(prod => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 border-b border-gray-100 transition";
+                
+                tr.innerHTML = `
+                    <td class="p-4 font-mono text-gray-500">#${prod.id}</td>
+                    <td class="p-4 font-medium text-gray-900 flex items-center space-x-3">
+                        <img src="${prod.imagenUrl}" class="w-10 h-10 rounded object-cover shadow-sm">
+                        <span>${prod.nombre}</span>
+                    </td>
+                    <td class="p-4 text-gray-600">
+                        <span class="bg-gray-100 px-2 py-1 rounded text-xs">${prod.categoria}</span>
+                    </td>
+                    <td class="p-4 text-gray-900 font-medium">${formatearCLP(prod.precio)}</td>
+                    <td class="p-4 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <button onclick="cambiarStock(${prod.id}, -1)" class="w-8 h-8 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition">
+                                <i data-lucide="minus" class="w-4 h-4"></i>
+                            </button>
+                            <input type="number" min="0" value="${prod.stock}" 
+                                onchange="establecerStock(${prod.id}, this.value)"
+                                class="w-16 text-center border border-gray-300 rounded-md py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                            <button onclick="cambiarStock(${prod.id}, 1)" class="w-8 h-8 rounded-full bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            lucide.createIcons();
+        };
+
+
+        // --- 5. LÓGICA DE CONTROL DE STOCK ---
+        const mostrarMensajeExito = () => {
+            const msg = document.getElementById('mensaje-exito');
+            msg.classList.remove('hidden');
+            setTimeout(() => {
+                msg.classList.add('hidden');
+            }, 2000);
+        };
+
+        const cambiarStock = (id, cantidad) => {
+            const producto = productos.find(p => p.id === id);
+            if (producto) {
+                let nuevoStock = producto.stock + cantidad;
+                if (nuevoStock < 0) nuevoStock = 0; // Evitar stock negativo
+                producto.stock = nuevoStock;
+                renderizarAdmin(); // Actualizar vista admin
+                mostrarMensajeExito();
+            }
+        };
+
+        const establecerStock = (id, valor) => {
+            const producto = productos.find(p => p.id === id);
+            if (producto) {
+                let nuevoStock = parseInt(valor);
+                if (isNaN(nuevoStock) || nuevoStock < 0) nuevoStock = 0;
+                producto.stock = nuevoStock;
+                renderizarAdmin();
+                mostrarMensajeExito();
+            }
+        };
+
+
+        // --- 6. NAVEGACIÓN ENTRE VISTAS ---
+        const cambiarVista = (vista) => {
+            const vTienda = document.getElementById('vista-tienda');
+            const vAdmin = document.getElementById('vista-admin');
+            const btnTienda = document.getElementById('btn-tienda');
+            const btnAdmin = document.getElementById('btn-admin');
+
+            if (vista === 'tienda') {
+                vTienda.classList.remove('hidden');
+                vAdmin.classList.add('hidden');
+                btnTienda.classList.add('bg-indigo-700');
+                btnAdmin.classList.remove('bg-indigo-700');
+                renderizarTienda(); // Refrescar vista tienda para ver los nuevos stocks
+            } else {
+                vAdmin.classList.remove('hidden');
+                vTienda.classList.add('hidden');
+                btnAdmin.classList.add('bg-indigo-700');
+                btnTienda.classList.remove('bg-indigo-700');
+                renderizarAdmin();
+            }
+        };
+
+
+        // --- 7. INICIALIZACIÓN ---
+        window.onload = () => {
+            // Inicializar iconos y renderizar la tienda por defecto
+            lucide.createIcons();
+            renderizarTienda();
+        };
+
+    </script>
+</body>
+</html>
