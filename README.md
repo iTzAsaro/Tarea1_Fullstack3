@@ -1,45 +1,108 @@
-▪ El propósito de esta actividad es evaluar los siguientes Indicadores de Logro:
-o 1.1. Analiza patrones de arquitectura y sus combinaciones, identificando aquellos que mejor se ajustan a los requerimientos del
-cliente, demostrando su capacidad para aplicar soluciones adaptadas a contextos específicos.
-Subdirección de Diseño Instruccional
-Interna
-Pasos a seguir en la actividad:
-• Análisis de Requerimientos: A partir del caso práctico, como una aplicación de e-commerce con requerimientos específicos, los equipos
-deberán analizarlos y justificar el uso de una arquitectura de microservicios frente a una monolítica.
-• Diseño del Microservicio: Cada equipo diseñará un microservicio que resuelva uno de los requerimientos asignados. Deberán definir el
-dominio del servicio, las entradas y salidas esperadas, y un modelo de datos simple.
-• Implementación Práctica: Usando Java (Spring Boot) o Django (Django Rest Framework), los equipos crearán un prototipo funcional del
-microservicio. El servicio debe incluir al menos dos endpoints básicos, como:
-o GET /productos: Retorna una lista de productos en formato JSON.
-o POST /productos: Permite agregar un nuevo producto (simulación).
-• Pruebas y Validación: Los equipos probarán su microservicio utilizando herramientas como Postman o navegadores web, verificando que los
-endpoints funcionen correctamente y cumplan con los requerimientos definidos
+# Microservicios del Proyecto
 
-Contexto del Cliente:
+Este repositorio implementa una arquitectura basada en microservicios para un e-commerce. Cada microservicio es un proyecto Django independiente y expone una API REST (JSON) para su dominio.
 
- 
+## Resumen
 
-ShopSmart es una plataforma de comercio electrónico que ha ganado popularidad rápidamente debido a su enfoque en ofrecer productos diversos y accesibles. Sin embargo, este crecimiento acelerado ha revelado limitaciones críticas en su arquitectura tecnológica actual, que se basa en un sistema monolítico. Estas limitaciones han comenzado a impactar negativamente la experiencia del cliente y la eficiencia operativa, generando un llamado urgente a modernizar su infraestructura.
+| Microservicio | Dominio / Función | Tecnología | Puerto local sugerido | Endpoints principales |
+|---|---|---|---:|---|
+| Inventory Service | Catálogo/stock de productos | Python, Django, Django REST Framework, Swagger (OpenAPI) | 8001 | `GET/POST /productos/`, `GET /health/`, `GET /docs/`, `GET /schema/` |
+| Orders Service | Creación y consulta de pedidos | Python, Django, Django REST Framework, Swagger (OpenAPI) | 8002 | `GET/POST /pedidos/`, `GET /health/`, `GET /docs/`, `GET /schema/` |
+| Users Service | Registro y consulta de usuarios | Python, Django, Django REST Framework, Swagger (OpenAPI) | 8003 | `GET/POST /usuarios/`, `GET /health/`, `GET /docs/`, `GET /schema/` |
 
+## Inventory Service (Inventario)
 
-Problemas Clave Identificados:
+- **Nombre del servicio:** Inventory Service
+- **Función específica:** Mantiene un catálogo básico de productos con stock y precio; habilita consultas y alta de productos.
+- **Razones de integración (técnicas/negocio):**
+  - Reduce desajustes de stock separando el dominio de inventario del resto de la plataforma.
+  - Permite escalar y desplegar inventario de forma independiente (picos de consulta de catálogo).
+- **Tecnologías utilizadas:** Python, Django, Django REST Framework, SQLite (desarrollo), JSON.
+- **Endpoints principales:**
+  - `GET /health/`: verificación de salud del servicio.
+  - `GET /docs/`: Swagger UI del servicio.
+  - `GET /schema/`: especificación OpenAPI en JSON.
+  - `GET /productos/`: lista productos.
+  - `POST /productos/`: crea un producto (simulación).
+- **Dependencias con otros servicios:**
+  - Dependencia técnica directa: ninguna en este prototipo (no hay llamadas HTTP entre servicios).
+  - Dependencia conceptual: Orders Service debería validar disponibilidad/stock antes de confirmar un pedido.
+- **Código:** [inventory_service](file:///c:/Developer/Tarea1_Fullstack3/backend/services/inventory_service)
 
-    Gestión de Inventario
-    El sistema actual carece de sincronización eficiente entre múltiples almacenes, lo que genera desajustes en los niveles de stock.
-    Es común que productos marcados como disponibles en el catálogo en línea no lo estén en el inventario real, lo que lleva a cancelaciones y frustración del cliente.
-    Necesitan una solución que permita actualizaciones en tiempo real y que sea capaz de escalar con el crecimiento de nuevos almacenes.
-    Procesamiento de Pedidos
-    Durante eventos de alto tráfico, como promociones y festivales de compras, el sistema monolítico enfrenta latencias elevadas y caídas frecuentes.
-    El flujo de procesamiento de pagos y la gestión de envíos necesitan una optimización para reducir tiempos de respuesta y evitar cuellos de botella.
-    Requieren dividir responsabilidades en servicios especializados para garantizar la fiabilidad durante picos de demanda.
-    Servicio a Usuarios
-    La plataforma actual no puede ofrecer personalización avanzada, como recomendaciones basadas en el historial de compras o un soporte proactivo.
-    Buscan un módulo dedicado que permita un mejor manejo de la información del cliente, soporte rápido y personalizado, y un incremento en la fidelización.
+## Orders Service (Pedidos)
 
-Objetivo de la Modernización:
+- **Nombre del servicio:** Orders Service
+- **Función específica:** Registra pedidos y permite listarlos/crearlos.
+- **Razones de integración (técnicas/negocio):**
+  - Aísla el procesamiento de pedidos para aumentar disponibilidad durante picos de tráfico.
+  - Permite evolucionar el flujo de pedidos (pagos/envíos) sin impactar inventario o usuarios.
+- **Tecnologías utilizadas:** Python, Django, Django REST Framework, SQLite (desarrollo), JSON.
+- **Endpoints principales:**
+  - `GET /health/`: verificación de salud del servicio.
+  - `GET /docs/`: Swagger UI del servicio.
+  - `GET /schema/`: especificación OpenAPI en JSON.
+  - `GET /pedidos/`: lista pedidos.
+  - `POST /pedidos/`: crea un pedido (simulación).
+- **Dependencias con otros servicios:**
+  - Dependencia técnica directa: ninguna en este prototipo.
+  - Dependencia conceptual: usa datos de usuario (Users Service) y disponibilidad de productos (Inventory Service) para validaciones del negocio.
+- **Código:** [orders_service](file:///c:/Developer/Tarea1_Fullstack3/backend/services/orders_service)
 
-    Con esta solución, espera:
+## Users Service (Usuarios)
 
-    Mejorar la escalabilidad y el rendimiento.
-    Incrementar la disponibilidad de servicios críticos.
-    Introducir flexibilidad para desarrollar e implementar nuevas funcionalidades de manera independiente.
+- **Nombre del servicio:** Users Service
+- **Función específica:** Administra el registro y consulta de usuarios (datos básicos del cliente).
+- **Razones de integración (técnicas/negocio):**
+  - Centraliza datos de usuario para habilitar soporte/personalización sin acoplarlos al flujo de inventario/pedidos.
+  - Permite escalar independientemente operaciones relacionadas a clientes.
+- **Tecnologías utilizadas:** Python, Django, Django REST Framework, SQLite (desarrollo), JSON.
+- **Endpoints principales:**
+  - `GET /health/`: verificación de salud del servicio.
+  - `GET /docs/`: Swagger UI del servicio.
+  - `GET /schema/`: especificación OpenAPI en JSON.
+  - `GET /usuarios/`: lista usuarios.
+  - `POST /usuarios/`: crea un usuario (simulación).
+- **Dependencias con otros servicios:**
+  - Dependencia técnica directa: ninguna en este prototipo.
+  - Dependencia conceptual: Orders Service asocia pedidos a un cliente/usuario.
+- **Código:** [users_service](file:///c:/Developer/Tarea1_Fullstack3/backend/services/users_service)
+
+## Ejecución local (referencia)
+
+Dependencias Python:
+
+```powershell
+py -m venv backend\.venv
+& .\backend\.venv\Scripts\python.exe -m pip install -r .\backend\requirements.txt
+```
+
+Levantar servicios:
+
+```powershell
+& .\backend\.venv\Scripts\python.exe backend\services\inventory_service\manage.py migrate
+& .\backend\.venv\Scripts\python.exe backend\services\inventory_service\manage.py runserver 8001
+
+& .\backend\.venv\Scripts\python.exe backend\services\orders_service\manage.py migrate
+& .\backend\.venv\Scripts\python.exe backend\services\orders_service\manage.py runserver 8002
+
+& .\backend\.venv\Scripts\python.exe backend\services\users_service\manage.py migrate
+& .\backend\.venv\Scripts\python.exe backend\services\users_service\manage.py runserver 8003
+```
+
+## Documentación Swagger (OpenAPI)
+
+Cada microservicio expone su documentación en Swagger UI y su especificación OpenAPI en JSON.
+
+1) Levanta el microservicio que quieras documentar (ver sección “Levantar servicios”).
+
+2) Abre la documentación en el navegador:
+
+- Inventory Service: `http://127.0.0.1:8001/docs/` (schema: `http://127.0.0.1:8001/schema/`)
+- Orders Service: `http://127.0.0.1:8002/docs/` (schema: `http://127.0.0.1:8002/schema/`)
+- Users Service: `http://127.0.0.1:8003/docs/` (schema: `http://127.0.0.1:8003/schema/`)
+
+## Contribución al objetivo general
+
+- **Inventory Service:** mejora la consistencia del stock y habilita escalamiento focalizado del catálogo, reduciendo cancelaciones por desajustes.
+- **Orders Service:** incrementa disponibilidad del flujo crítico de compra al aislar pedidos, evitando que picos de demanda afecten a todo el sistema.
+- **Users Service:** habilita gestión dedicada de clientes, facilitando personalización/soporte y evolución independiente de funcionalidades centradas en usuario.
