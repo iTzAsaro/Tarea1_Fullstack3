@@ -7,3 +7,11 @@ dist
 coverage
 .turbo
 .vite
+__pycache__/
+*.py[cod]
+.Python
+.venv/
+venv/
+ENV/
+env/
+*.sqlite3
