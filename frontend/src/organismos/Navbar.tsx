@@ -1,5 +1,5 @@
 import type React from 'react';
-import { Settings, ShoppingBag, Store } from 'lucide-react';
+import { Network, Settings, ShoppingBag, Store } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../utils/cn';
 
@@ -38,6 +38,7 @@ export function Navbar() {
         </div>
         <div className="flex space-x-4">
           <NavButton to="/" label="Tienda" icon={<ShoppingBag className="w-4 h-4" />} />
+          <NavButton to="/microservicios" label="Microservicios" icon={<Network className="w-4 h-4" />} />
           <NavButton to="/admin" label="Administración" icon={<Settings className="w-4 h-4" />} />
         </div>
       </div>
