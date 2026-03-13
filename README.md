@@ -169,6 +169,33 @@ py -m venv backend\.venv
 & .\backend\.venv\Scripts\python.exe -m pip install -r .\backend\requirements.txt
 ```
 
+Comando para levantar microservicios (con logs consolidados):
+
+```powershell
+npm run services -- --all
+```
+
+Ejecutar un servicio (auto-incluye dependencias):
+
+```powershell
+npm run services -- --service payments
+```
+
+Opciones útiles:
+
+```powershell
+npm run services -- --list
+npm run services -- --service orders --no-deps
+npm run services -- --all --no-migrate
+npm run services -- --all --dry-run
+```
+
+Pruebas del comando:
+
+```powershell
+npm run test:services
+```
+
 Levantar servicios:
 
 ```powershell

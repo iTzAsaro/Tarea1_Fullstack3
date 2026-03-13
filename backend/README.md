@@ -37,6 +37,20 @@ backend\.venv\Scripts\python -m pip install -r backend\requirements.txt
 
 ## Ejecutar microservicios
 
+Comando desde la raíz del repo (logs consolidados + validación de dependencias):
+
+```powershell
+npm run services -- --all
+```
+
+Levantar solo uno (auto-incluye dependencias):
+
+```powershell
+npm run services -- --service orders
+```
+
+Modo manual (servicios individuales):
+
 Inventario:
 
 ```powershell
@@ -89,6 +103,7 @@ backend\.venv\Scripts\python backend\services\customer_service\manage.py runserv
 ## Tests
 
 ```powershell
+npm run test:services
 backend\.venv\Scripts\python backend\services\inventory_service\manage.py test productos
 backend\.venv\Scripts\python backend\services\orders_service\manage.py test pedidos
 backend\.venv\Scripts\python backend\services\users_service\manage.py test usuarios
@@ -97,4 +112,3 @@ backend\.venv\Scripts\python backend\services\payments_service\manage.py test pa
 backend\.venv\Scripts\python backend\services\shipping_service\manage.py test envios
 backend\.venv\Scripts\python backend\services\customer_service\manage.py test clientes
 ```
-
